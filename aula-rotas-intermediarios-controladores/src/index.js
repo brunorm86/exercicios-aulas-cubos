@@ -2,38 +2,31 @@ const express = require('express');
 
 const app = express();
 
-const professores = [
-    {
-        id: 1,
-        nome: "Guido",
-        stack: "Backend"
-    },
-    {
-        id: 2,
-        nome: "Bruno",
-        stack: "Frontend"
-    },
-    {
-        id: 3,
-        nome: "Diego",
-        stack: "Fullstack"
-    },
-    {
-        id: 4,
-        nome: "Astrogildo",
-        stack: "UX"
-    }
-];
+const { filtrarProfessores, encontrarUmProfessor } = require('./controladores/professores');
+
+const primeiroIntermediario = (req, res, next) => {
+    console.log("Passei no primeiro intermediário");
+    next();
+};
+const segundoIntermediario = (req, res, next) => {
+    console.log("Passei no segundo intermediário");
+    next();
+};
+
+const intermediarioDaRota = (req, res, next) => {
+    console.log("Passei no intermediário da rota");
+    next();
+};
+
+//intermediários independentes. basicamente uma função
+//app.use(primeiroIntermediario);
+//app.use(segundoIntermediario);
 
 app.listen(3000);
 
-app.get('/professores', (req, res) => {
-    res.send(professores);
-});
+//intermediário da rota
+app.get('/professores', segundoIntermediario, intermediarioDaRota, filtrarProfessores);
 
-app.get('/professores/:id', (req, res) => {
-    const professorEncontrado = professores.find((professor) => {
-        return professor.id == req.params.id;
-    });
-    res.send(professorEncontrado);
-})
+app.get('/professores/:id', encontrarUmProfessor);
+
+
